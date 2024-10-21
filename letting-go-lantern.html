@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Letting Go Lantern</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400&display=swap');
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: 'Noto Serif JP', serif;
+            background: linear-gradient(135deg, #0f0f29, #24243e);
+            color: #f0e6d2;
+            overflow: hidden;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 300;
+            letter-spacing: 2px;
+        }
+        #input-container {
+            display: flex;
+            margin-bottom: 20px;
+            width: 100%;
+            max-width: 400px;
+        }
+        #release-input {
+            flex-grow: 1;
+            padding: 10px;
+            font-size: 1em;
+            border: none;
+            border-radius: 25px 0 0 25px;
+            background-color: rgba(240, 230, 210, 0.1);
+            color: #f0e6d2;
+            font-family: 'Noto Serif JP', serif;
+        }
+        #release-button {
+            padding: 10px 20px;
+            font-size: 1em;
+            background-color: #e85a71;
+            color: #f0e6d2;
+            border: none;
+            border-radius: 0 25px 25px 0;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-family: 'Noto Serif JP', serif;
+        }
+        #release-button:hover {
+            background-color: #d04c61;
+        }
+        .lantern {
+            position: absolute;
+            width: 50px;
+            height: 75px;
+            background: radial-gradient(ellipse at center, rgba(255,223,186,0.7) 0%, rgba(255,223,186,0.3) 70%, rgba(255,223,186,0) 100%);
+            border-radius: 25px 25px 5px 5px;
+            text-align: center;
+            padding: 10px;
+            font-size: 0.8em;
+            color: #333;
+            box-shadow: 0 0 15px rgba(255, 223, 186, 0.5);
+            transition: opacity 1s;
+        }
+        .lantern::before {
+            content: "";
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 10px;
+            height: 10px;
+            background-color: rgba(255, 223, 186, 0.7);
+            border-radius: 50%;
+        }
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+        .star {
+            position: absolute;
+            background-color: #ffffff;
+            border-radius: 50%;
+            animation: twinkle 2s infinite alternate;
+        }
+        @keyframes twinkle {
+            0% { opacity: 0.3; }
+            100% { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="stars"></div>
+    <div class="container">
+        <h1>Letting Go Lantern</h1>
+        <div id="input-container">
+            <input type="text" id="release-input" placeholder="What do you want to set free?">
+            <button id="release-button">Release</button>
+        </div>
+    </div>
+
+    <script>
+        const releaseInput = document.getElementById('release-input');
+        const releaseButton = document.getElementById('release-button');
+        const starsContainer = document.querySelector('.stars');
+
+        function createStars() {
+            for (let i = 0; i < 100; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.width = `${Math.random() * 2}px`;
+                star.style.height = star.style.width;
+                star.style.left = `${Math.random() * 100}%`;
+                star.style.top = `${Math.random() * 100}%`;
+                star.style.animationDuration = `${Math.random() * 3 + 1}s`;
+                starsContainer.appendChild(star);
+            }
+        }
+
+        function createLantern(text) {
+            const lantern = document.createElement('div');
+            lantern.className = 'lantern';
+            lantern.textContent = text;
+
+            // Set initial position
+            const startX = Math.random() * 80 + 10; // 10% to 90% of screen width
+            lantern.style.left = `${startX}%`;
+            lantern.style.bottom = '0';
+
+            document.body.appendChild(lantern);
+
+            console.log('Lantern created:', { text, startX });
+
+            // Animate the lantern
+            let bottom = 0;
+            const intervalId = setInterval(() => {
+                bottom += 0.5;
+                lantern.style.bottom = `${bottom}%`;
+                console.log('Lantern position:', { bottom, left: lantern.style.left });
+
+                if (bottom >= 100) {
+                    clearInterval(intervalId);
+                    lantern.remove();
+                    console.log('Lantern removed');
+                }
+            }, 50);
+
+            // Fade out near the end
+            setTimeout(() => {
+                lantern.style.opacity = '0';
+            }, 14000);
+        }
+
+        function releaseLantern() {
+            const text = releaseInput.value.trim();
+            if (text) {
+                createLantern(text);
+                releaseInput.value = '';
+            }
+        }
+
+        releaseButton.addEventListener('click', releaseLantern);
+        releaseInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                releaseLantern();
+            }
+        });
+
+        createStars();
+        console.log('Script initialized');
+    </script>
+</body>
+</html>
